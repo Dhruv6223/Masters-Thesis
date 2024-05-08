@@ -1,0 +1,136 @@
+\section{Document Understanding}
+
+Document understanding is a new research topic in NLP, since majority of models and architecture are based on text-level manipulation. Document understanding associate to the techniques to automatically read, understand or business documents. These document usually are digitally borned, scans, images or printed papers. Documents are being used in almost every business in form of financial reports, emails, letters, invoices, purchase orders, resumes and so on. It can directly impact the productivity and efficiency of the company. These documents comes with different formats and layouts as shown in \Cref{fig:different_documents}. However, the content inside these documents usually are in natural language. The extraction of information inside these documents are being done manually costing companies time and money. Therefore, the goal of Document understanding is to classify, extract and structure the information automatically using AI models and algorithms. 
+
+
+\begin{figure}[ht]
+\includegraphics[width=0.3\textwidth]{chapters/images/de_train_0.jpg}\hfill
+\includegraphics[width=0.3\textwidth]{chapters/images/Literature_review/Different_documents/fr_train_51.jpg}\hfill
+\includegraphics[width=0.3\textwidth]{chapters/images/Literature_review/Different_documents/it_train_24.jpg}
+
+\caption{documents with Various layouts and languages \cite{xfund}}
+    \label{fig:different_documents}
+\end{figure}
+
+
+Early approaches of document understanding were usually based on table structure recognition and layout analysis within the documents or scanned images. The paper presents T-Recs \cite{kieninger1998paper}, a system that can deal with identification of tables including the table cells and the analysis based on determine a correct row/column mapping. It takes words with their bounding box geometry and textual contents called "Block" as a input, with the help of central clustering algorithm the document then represents a document as a list of blocks that contains the main segmentation information as shown in \Cref{fig:Hirarchical_document_model_of_T-Recs_system}. After error correction steps such as Isolation of merged columns, Elimination of "Rivers" and Clustering of isolated words steps described in the paper, T-recs was able to identify Logical element structures of document as shown in \Cref{fig:T_recs}
+\begin{figure}[hb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{chapters/images/Literature_review/T_Recs_Blocks.JPG}
+    \caption{Hirarchical document model of T-Recs system \cite{kieninger1998paper}}
+    \label{fig:Hirarchical_document_model_of_T-Recs_system}
+\end{figure}
+\begin{figure}[hb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{chapters/images/Literature_review/T_RecsJPG.JPG }
+    \caption{Logical elements of a table \cite{kieninger1998paper}}
+    \label{fig:T_recs}
+\end{figure}
+
+In the 1980's, an emerging field of computer science, Machine Learning was progressing significantly in the domain of computing. Algorithms like decision trees provide enough confidence for machine to take decision using if-then rules provided acceptable evidence and new ways to conceptualise the language rather then using handwritten rules. Currently, the trend has been changed to neural networks or deep-learning. Deep-learning became the most efficient way to deal with natural languages since it is not necessary for a programmer to provide rules to decide, algorithm improves the accuracy or efficiency by mapping an input to an output and reducing the errors. 
+
+In the paper \cite{hao2016table} another approach is described which uses Convolutional neural network to classify the pdf-document content. The process starts with choosing table-like areas using loose rules, every area that shares a slight similarity with a table area are taken into account. Then by using convolutional neural networks whether the selected areas are tables or not is being classified. Furthermore, the introduction of R-CNN \cite{ren2015faster} and Mask R-CNN \cite{he2017mask} model helped increasing the accuracy of document analysis systems that were based on convolutional networks. Although models that uses similar approach showed notable progress in document understanding domain but major methodologies and methods were having dependency on labeled training dataset and usually can not be trained textual and layout information jointly. The classification results of this model is shown in \Cref{fig:Results_tabel_detection}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{chapters/images/Literature_review/A_table_detection_method.JPG}
+    \caption{Results of \cite{hao2016table} model}
+    \label{fig:Results_tabel_detection}
+\end{figure}
+
+LayoutLM \cite{xu2020layoutlm} is a simple yet effective pre-training method that uses text and layout information jointly for document image understanding.  The model was inspired by BERT \cite{devlin2018bert} which uses text embedding with the positional embedding. LayoutLM uses extra input embedding such as 2D position embedding that refers to the relative position of token within a document and the scanned images of these tokens as an image embedding. The 2D position embedding is responsible to capture the relationship between tokens and image embedding was responsible to capture features like font directions, types and colors. Masked language modeling played an important role to make transformer models context aware. It helps models to predict masked token in a sequence where the model can look into tokens bidirectionally, BERT is an example of masked language model. It uses masked language modeling to read tokens both left and right which provides the model a contextual understanding of an entire sequence. Most visual document understanding or structured document understanding models were trained on one specific language, In paper \cite{xu2021layoutxlm} the LayoutXLM has been presented that uses multimodal methodology to pre-train the model with text, layout and image and achieved to train a model that can  deal with multi-lingual document understanding.   
+
+
+Using machine learning approaches like multimodal pre-training for document understanding has achieved state-of-the-art performance in various tasks such as form understanding \cite{jaume2019funsd}, complex layout understanding \cite{gralinski2020kleister} and \acrfull{vqa} \cite{mathew2021docvqa} due to the upper hand of learning text, layout and image information jointly. However, 40\% of documents exists are not in English, one can use machine translation to translate these document in English. In addition, the quality of documents and translation can affect the results and that was the motivation of layoutxlm \cite{xu2021layoutxlm} to make layoutlm\cite{xu2020layoutlm} multilingual for \acrfull{vrdu}. The multilingual pre-trained models like mBERT \cite{devlin2018bert}, XLM \cite{lample2019cross} and mT5 \cite{xue2020mt5} had already achieved \acrshort{sota} performance on cross-lingual \acrshort{nlp} tasks. These models were trained using large amount of multilingual text data to pre-train the transformer. Although these models successfully bridge the cross-language functionality, it can not be used directly for \acrshort{vrdu} tasks because of diversity of documents, its format/layouts in different regions and countries. The classification result of LayoutXLM is shown in \Cref{fig:result_of_LayoutXLM}, Document in left and right is in Chinese and Italian respectively. Annotations in red shows the headers, green denotes the keys and blue shows the values. 
+
+\begin{figure}[!ht]
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[scale=0.3]{chapters/images/Literature_review/LayoutXLM_Results_Chinese.JPG}
+    \caption{Language: Chinese}
+    \label{subfig:a}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[scale=0.3]{chapters/images/Literature_review/LayoutXLM_Results_Italian.JPG}
+    \caption{Language: Italian}
+    \label{subfig:b}
+    \end{subfigure}
+    \caption{Classification results of LayoutXLM in two different language \cite{xu2021layoutxlm}}\label{fig:result_of_LayoutXLM}
+\end{figure}
+
+
+
+
+
+
+
+
+\section{Document Understanding}
+
+Document understanding is a new research topic in NLP, since majority of models and architecture are based on text-level manipulation. Document understanding associate to the techniques to automatically read, understand or business documents. These document usually are digitally borned, scans, images or printed papers. Documents are being used in almost every business in form of financial reports, emails, letters, invoices, purchase orders, resumes and so on. It can directly impact the productivity and efficiency of the company. These documents comes with different formats and layouts as shown in \Cref{fig:different_documents}. However, the content inside these documents usually are in natural language. The extraction of information inside these documents are being done manually costing companies time and money. Therefore, the goal of Document understanding is to classify, extract and structure the information automatically using AI models and algorithms. 
+
+
+\begin{figure}[ht]
+\includegraphics[width=0.3\textwidth]{chapters/images/de_train_0.jpg}\hfill
+\includegraphics[width=0.3\textwidth]{chapters/images/Literature_review/Different_documents/fr_train_51.jpg}\hfill
+\includegraphics[width=0.3\textwidth]{chapters/images/Literature_review/Different_documents/it_train_24.jpg}
+
+\caption{documents with Various layouts and languages \cite{xfund}}
+    \label{fig:different_documents}
+\end{figure}
+
+
+Early approaches of document understanding were usually based on table structure recognition and layout analysis within the documents or scanned images. The paper presents T-Recs \cite{kieninger1998paper}, a system that can deal with identification of tables including the table cells and the analysis based on determine a correct row/column mapping. It takes words with their bounding box geometry and textual contents called "Block" as a input, with the help of central clustering algorithm the document then represents a document as a list of blocks that contains the main segmentation information as shown in \Cref{fig:Hirarchical_document_model_of_T-Recs_system}. After error correction steps such as Isolation of merged columns, Elimination of "Rivers" and Clustering of isolated words steps described in the paper, T-recs was able to identify Logical element structures of document as shown in \Cref{fig:T_recs}
+\begin{figure}[hb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{chapters/images/Literature_review/T_Recs_Blocks.JPG}
+    \caption{Hirarchical document model of T-Recs system \cite{kieninger1998paper}}
+    \label{fig:Hirarchical_document_model_of_T-Recs_system}
+\end{figure}
+\begin{figure}[hb]
+    \centering
+    \includegraphics[width=0.7\textwidth]{chapters/images/Literature_review/T_RecsJPG.JPG }
+    \caption{Logical elements of a table \cite{kieninger1998paper}}
+    \label{fig:T_recs}
+\end{figure}
+
+In the 1980's, an emerging field of computer science, Machine Learning was progressing significantly in the domain of computing. Algorithms like decision trees provide enough confidence for machine to take decision using if-then rules provided acceptable evidence and new ways to conceptualise the language rather then using handwritten rules. Currently, the trend has been changed to neural networks or deep-learning. Deep-learning became the most efficient way to deal with natural languages since it is not necessary for a programmer to provide rules to decide, algorithm improves the accuracy or efficiency by mapping an input to an output and reducing the errors. 
+
+In the paper \cite{hao2016table} another approach is described which uses Convolutional neural network to classify the pdf-document content. The process starts with choosing table-like areas using loose rules, every area that shares a slight similarity with a table area are taken into account. Then by using convolutional neural networks whether the selected areas are tables or not is being classified. Furthermore, the introduction of R-CNN \cite{ren2015faster} and Mask R-CNN \cite{he2017mask} model helped increasing the accuracy of document analysis systems that were based on convolutional networks. Although models that uses similar approach showed notable progress in document understanding domain but major methodologies and methods were having dependency on labeled training dataset and usually can not be trained textual and layout information jointly. The classification results of this model is shown in \Cref{fig:Results_tabel_detection}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{chapters/images/Literature_review/A_table_detection_method.JPG}
+    \caption{Results of \cite{hao2016table} model}
+    \label{fig:Results_tabel_detection}
+\end{figure}
+
+LayoutLM \cite{xu2020layoutlm} is a simple yet effective pre-training method that uses text and layout information jointly for document image understanding.  The model was inspired by BERT \cite{devlin2018bert} which uses text embedding with the positional embedding. LayoutLM uses extra input embedding such as 2D position embedding that refers to the relative position of token within a document and the scanned images of these tokens as an image embedding. The 2D position embedding is responsible to capture the relationship between tokens and image embedding was responsible to capture features like font directions, types and colors. Masked language modeling played an important role to make transformer models context aware. It helps models to predict masked token in a sequence where the model can look into tokens bidirectionally, BERT is an example of masked language model. It uses masked language modeling to read tokens both left and right which provides the model a contextual understanding of an entire sequence. Most visual document understanding or structured document understanding models were trained on one specific language, In paper \cite{xu2021layoutxlm} the LayoutXLM has been presented that uses multimodal methodology to pre-train the model with text, layout and image and achieved to train a model that can  deal with multi-lingual document understanding.   
+
+
+Using machine learning approaches like multimodal pre-training for document understanding has achieved state-of-the-art performance in various tasks such as form understanding \cite{jaume2019funsd}, complex layout understanding \cite{gralinski2020kleister} and \acrfull{vqa} \cite{mathew2021docvqa} due to the upper hand of learning text, layout and image information jointly. However, 40\% of documents exists are not in English, one can use machine translation to translate these document in English. In addition, the quality of documents and translation can affect the results and that was the motivation of layoutxlm \cite{xu2021layoutxlm} to make layoutlm\cite{xu2020layoutlm} multilingual for \acrfull{vrdu}. The multilingual pre-trained models like mBERT \cite{devlin2018bert}, XLM \cite{lample2019cross} and mT5 \cite{xue2020mt5} had already achieved \acrshort{sota} performance on cross-lingual \acrshort{nlp} tasks. These models were trained using large amount of multilingual text data to pre-train the transformer. Although these models successfully bridge the cross-language functionality, it can not be used directly for \acrshort{vrdu} tasks because of diversity of documents, its format/layouts in different regions and countries. The classification result of LayoutXLM is shown in \Cref{fig:result_of_LayoutXLM}, Document in left and right is in Chinese and Italian respectively. Annotations in red shows the headers, green denotes the keys and blue shows the values. 
+
+\begin{figure}[!ht]
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[scale=0.3]{chapters/images/Literature_review/LayoutXLM_Results_Chinese.JPG}
+    \caption{Language: Chinese}
+    \label{subfig:a}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[scale=0.3]{chapters/images/Literature_review/LayoutXLM_Results_Italian.JPG}
+    \caption{Language: Italian}
+    \label{subfig:b}
+    \end{subfigure}
+    \caption{Classification results of LayoutXLM in two different language \cite{xu2021layoutxlm}}\label{fig:result_of_LayoutXLM}
+\end{figure}
+
+
+
+
+
+
+
+

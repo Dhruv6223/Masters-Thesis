@@ -1,0 +1,26 @@
+\chapter*{Abstract}
+\large
+ % Natural Language Processing is playing a significant role in developing world around us, from performing translation tasks to chat-bots generating Human-like responses within seconds. Not just words or sentences but some of these models are capable of performing task such as Sentiment Analysis, NER-tag classification, Automatic text summarization, Question Answering on a complete document-level. However, working with documents leads to the question whether if the document is machine readable. Moreover, usually models can perform these task in the language that they have been trained on. In addition, the cost to run neural networks is relatively high and requires more computational power. On other hand, to build, develop and deploy the \acrshort{ml} services is a complex task, since it requires high computational resources just to run these networks. 
+ 
+ Concerning, various languages within document and infrastructure for deployment, this thesis is focused on mainly two research criteria. First, finding \acrfull{nlp} models that can deal with documents for more than one language and fine-tune for one specific language for production use. Second, develop an infrastructure that can serve the model for scalable solutions. To address the languages for documents, the state-of-the-art machine learning algorithms has been used. The framework of the model uses a parallel dual-stream transformer that uses text-flow and the layout-flow to take benefit from both features for classification of complete document into "Headers, Question, Answer, Other" classes. This helped to deal with the languages and layouts inside the documents and the same model can be used for more than one language which will help to develop a general \acrshort{ml} as-a-service that can be the same for different languages using the same methods and deployment infrastructure. For deployment, the cloud providers such as \acrshort{aws} has been used in order to build, develop and deploy the \acrshort{ml} services, that can have an advantages of cloud such as centralized data security, high performance and availability, scalability and so on for the service. We evaluate the model performance using German language documents, further we evaluate the same model on different other languages in order to find out the model compatibility with other languages. The proposed model was pre-trained on English language documents and later we fine-tuned on German languge documents, it shows the best results in German, good results in English and worst results in other languages. However, on the bases of accuracy of the model for different languages without fine-tune in those language shows that even though the models has never seen other languages before, it is still able show average of 20 \% of accuracy for all other languages showing that there is a chance for improvement to be a multi-lingual.
+ 
+ Overall, this thesis illustrates the feasibility and potential benefits of using \acrlong{ml} and using cloud platforms for deployment in order to process the documents that can be serve as \acrshort{saas}.
+
+
+
+
+
+
+
+
+
+
+% In addition, cloud-providers made it possible to deploy these models to use them asynchronously, 
+
+
+% However, working with documents leads to the question whether if the document is in machine readable format. 
+
+
+
+
+% That became our motivation to develop a Machine Learning driven NLP pipeline and deploy it on cloud computing platform like AWS (Amazon Web Services) for Scalable Solutions to serve pipeline as SaaS (software as a service) that is able to make document in machine readable format and able to perform classification task for more than one language at document-level. The proposed model is using text-flow and layout-flow of a document and combining the enhanced features using self-attention mechanism to take benefit from both flow to perform multilingual task or in other word a language independent task.    

@@ -1,0 +1,205 @@
+\section{Proposed Model}
+In order to design a prototype that uses multi-lingual documents as an input and classify the content of the document, we use the pre-trained model LiLT  \cite{wang-etal-2022-lilt}. During the pre-training of LiLT, the text and layout information are first decoupled and joint-optimized and re-coupled for fine-tunning. This techniques helps the model to learn text and layout jointly therefore named as \acrfull{lilt}, It can pre-trained on the structured documents of a single language and then directly be fine-tuned on other languages. 
+
+\begin{figure}[hb]
+    \centering
+    \includegraphics[width=0.9\textwidth]{chapters/images/Methods/Proposed Model/lilt_framework.png}
+    \caption{LiLT framework \cite{wang-etal-2022-lilt}}
+    \label{fig:lilt_framework}
+\end{figure}
+
+The overall representation of LiLT method is shown in \Cref{fig:lilt_framework}, Each component is explained in paragraphs below. 
+
+\subsection{OCR Engines}
+First step is two pass the image through OCR engines in order to extract the text bounding boxes and content from the document. For example OCR engines will generate list of words (['Bezeichnung,', 'Ort', 'und', 'Geschäftsnummer', 'des', 'Gerichts:', 'Erklärung‘,…]) and bounding boxes ([[64, 64, 147, 73], [152, 64, 170, 71], [175, 64, 197, 71], [203, 64, 315, 71], [319, 64, 340, 71], [345, 64, 401, 71], [135, 118, 239, 133],…]) from image shown in \Cref{fig:exampleimage} where bounding boxes values represents as [x, y, width, height] from each word, the coordinates x and y refers to top-left corner of the bounding box. 
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth, trim={0 20cm 0 0},clip]{chapters/images/de_train_0.jpg}
+    \caption{Example document}
+    \label{fig:exampleimage}
+\end{figure}
+
+
+
+\subsubsection{Line Finding}
+
+The line finding algorithm was developed to be able to work with images that are skewed without performing de-skew in order to maintain  the image quality \cite{Line_Finding_Algorithem}. The key role of this algorithm is to perform blob filtering and line construction. It uses a \textbf{simple percentile hight filter} for removing drop-caps and vertically touching characters, The \textbf{median height approximation} for text size and region and makes it safe to filter out blobs smaller than some fraction of the median height. By sorting x-coordinates, blobs are assigned to a unique text-lines. Later on, a least median of squares fir \cite{least_median_squares_algorithm} is being used for baseline estimation. Finally all blobs are being merged to form a line.
+
+\subsubsection{Baseline Fitting}
+
+After the line of the text document has been extracted, the baseline are fitted with more accuratly using a quadratic spline, an another first approch for OCR system that allowed Tesseract to handle curved baselines \cite{quadratic_spline_algorithm}. While quadratic spline have an advantage of claculating reasonably stable baseline, it can struggle when it comes to multiple spline segments. Therefore, the more traditional cubic spline \cite{Traditional_cubic_algorithm} has been used to perfom baseline fitting.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{chapters/images/OCR/Base_Line_Fitting.JPG}
+    \caption{An example of a curved fitted baseline \cite{AnOverviewoftheTesseractOCREngine}}
+    \label{fig:Baseline_Fitting}
+\end{figure}
+
+\Cref{fig:Baseline_Fitting} shows the fitted baseline, descender line, mean-line and ascender line. The black line is straight and cyan line is slightly curved with compare to the straight black line above it.
+
+\subsubsection{Fixed Pitch Detection and Chopping}
+
+Tesseract takes the text lines and finds the fixed pitch and chops the words into characters using the pitch. It also disables the chopper and associator on these words for word recognition. A typical example of chopping fixed-pitch word has been showed in \Cref{fig:Fixed_Pitch_detection}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{chapters/images/OCR/Fixed_Pitch_detection.JPG}
+    \caption{Fixed Pitch Detection and Chopping\cite{AnOverviewoftheTesseractOCREngine}}
+    \label{fig:Fixed_Pitch_detection}
+\end{figure}
+
+\subsubsection{Proportional Word Finding}
+
+\Cref{fig:Proportional_Word_Finding} shows a typical exmple of the problems when it comes to perform various task mention in previous paragraphs. For instance, (\RomanNumeralLows{1}) The units of '11.9\%' is clearly larger than the kerned of words 'erated'. (\RomanNumeralLows{2}) There is no horizontal gap at all between words 'of' and 'financial'.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{chapters/images/OCR/Word_Finding.JPG}
+    \caption{Proportional Word Finding\cite{AnOverviewoftheTesseractOCREngine}}
+    \label{fig:Proportional_Word_Finding}
+\end{figure}
+
+Tesseract uses measurements of gaps in limited vertical range between the baseline and mean line. The spaces with smallest threshold are made fuzzy which later will be classified in word recognition.
+
+
+
+\subsection{Overview of post process after Line and Word Finding}
+
+Once the lines and words from the documents have been found, the step "Word Recognition" \cite{AnOverviewoftheTesseractOCREngine} is performed to identify the word segmentation which will be letter on classified. Tesseract performs "Chopping Joined Characters" in order to improve the results by chopping the blob based on the confidence derived from classifier. After the elimination of non potential chops, if the word is still not good enough, an associator makes an A* (best first) search based on  segmentation graph of possible combinations. This step can help Tesseract to identify the broken characters with more accuracy. Later on a "Static Character Classifier" \cite{AnOverviewoftheTesseractOCREngine} generates the 3-dimensional, (x, y, position, angle) with 50-100 features and the prototype features are 4-dimensional (x, y, position, angle, length) in a character. Which than will be used to perform classification to assign classes. The results of the Tesseract OCR is then exported to text, word or HTML format.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+\subsection{The Text and Layout Flow}
+Once we have words and respective bounding boxes, these information is passed to corresponding Transformer-based architecture in order to obtain enhanced feature. The flow contains content and layout information are referred as Text-flow and Layout-flow. Both text and layout information run in parallel transformer architecture separately, therefore author also refer this settings as parallel dual-stream Transformer.
+
+In the text flow, all the text derived from the OCR, first tokenized (vectorized) and concatenated as a sequence from the top-left to bottom-right, for instance if a document is having sentences of n number, than text embedding will be \(S_t= (s_1, s_2, s_3,...s_n)\). In order to preserve the information such as start of the sentence and end of the sentence, special tokens $[CLS]$ and $[SEP]$ is added in the concatenated series. Once we have all tokenized and concatenated sequences from entire document, $S_t$ will be truncated or padded with extra token $[PAD]$, which is a process where we make all sentence embedding $E_{token}$  into same length. Finally 1D positional embedding $P_{1D}$ (as shown in \Cref{fig:lilt_framework} using \Cref{eq:Wave_functions}) will be added to each sequence $E_{token}$ using the layer normalization $LN$ as shown in \Cref{eq:text_embedding} resulting in text embedding.
+\begin{equation}
+    E_T = LN(E_{token} + P_{1D})
+    \label{eq:text_embedding}
+\end{equation}
+
+For layout flow, the process of preparing layout embedding is similar to the process we discussed in previous paragraph for text embedding. First a 2D positional sequence $S_l$ is being prepared from bounding boxes derived from OCR engines, the coordinates of all integers are first normalized in the range of [0, 1000]. Four embedding layers generates features using x-axis, y-axis, height and width resulting in bounding box \(B = (x_{min}, x_{max}, y_{min}, y_{max}, width, height)\). The special tokens $[CLS] = (0,0,0,0,0,0), [SEP] = (1000, 1000, 1000, 1000, 0, 0)$ and $[PAD] = (0,0,0,0,0,0)$ are attached in order to add information like start/end of the sentence and padding them to same length. After that channelwise concatenation operation follow up with  $Linear$ layer (\Cref{eq:Linear_Layer}) also known as dense layer are being performed in order to make 2D vectors into 1D. Later on these embedding will be added to 1D positional embedding as shown in \Cref{eq:layout_embedding}.
+
+\begin{equation}
+    \label{eq:Linear_Layer}
+    P_{2D} = Linear(CAT(E_{x_{min}}, E_{x_{min}}, E_{x_{max}}, E_{y_{min}}, E_{y_{max}}, E_{width}, E_{height}))
+\end{equation}
+
+\begin{equation}
+    \label{eq:layout_embedding}
+    E_L = LN(P_{2D} + P_{1D})
+\end{equation}
+
+
+
+
+\subsection{BiACM}
+
+Once the text embedding $E_T$ and layout embedding $E_L$ are calculated, both are feeded into sub-models respectively in order to obtain high-level enhanced features as shown in \Cref{fig:lilt_framework}. If there is no interaction between text and layout flow, text based transformer will learn only from text embedding and layout based transformer layer will only learn from layout embedding, this can impact on cross-modality if text and layout features derived from these transformer layers are just simply combined. To overcome this issue, \cite{wang-etal-2022-lilt} proposed new bi-directional attention complementation mechanismm (BiACM). This mechansim allows both transformer to exchange some information at early stages to improve cross-modality interaction across the complete encoding. The model uses vanila self-attention mechanism in transformer layers in order to capture the correlation between query $x_i$ and key $x_j$ using \Cref{eq:vanila_mechanism}.  
+\begin{equation}
+    \alpha_{ij} =  \frac{(x_iW^Q)(x_jW^K)^T}{\sqrt{d^h}}
+    \label{eq:vanila_mechanism}
+\end{equation}
+
+For given $\alpha_{ij}^T$ and $\alpha_{ij}^L$ represents the text and layout attention scores for the same head of the same layer respectively, that will be shared as a common knowledge  as shown in \Cref{eq:BiACM}. $\alpha_{ij}^T$ is detached for $\widetilde{\alpha_{ij}^L}$ during pre-training where detach is a function that preserve the consistency of textual gradients by taking them out in the process of gradient computation. This helps reducing the effect of layout stream on textual stream during pre-training task. The final modified attention scores will be then used in both flows for further process as shown in \Cref{fig:lilt_framework}. 
+\begin{equation}
+    \widetilde{\alpha_{ij}^T} = \alpha_{ij}^L + \alpha_{ij}^T,
+    \label{eq:BiACM}
+\end{equation}
+\[ \widetilde{\alpha_{ij}^L} = \left\{\begin{matrix}
+ \alpha_{ij}^L + DETACH(\alpha_{ij}^T)&if\text{ Pre-train,}\\ 
+ \alpha_{ij}^L + \alpha_{ij}^T&  if\text{ Fine-tune}
+\end{matrix}\right.\]
+
+
+
+
+\subsection{Pre-training of LiLT}
+
+\acrshort{lilt} \cite{wang-etal-2022-lilt} has been trained using tasks such as (\RomanNumeralLows{1}) Masked Visual-Language Modeling (\RomanNumeralLows{2}) Key Point Location (\RomanNumeralLows{3}) Cross-modal Alignment Identification. These tasks also refer as self-supervised pre-training tasks where unlabeled source data is used to train the network and later on this pre-trained network will be transferred to supervised learning (fine-tuning) using target dataset. These self-supervised pre-training tasks helps model to learn joint representations along with cross-modal cooperation autonomously in unlabeled dataset. A comprehensive description of these tasks are described in paragraphs below. 
+
+\subsubsection{Masked Visual-Language Modeling}
+
+This task was originally mentioned in \cite{devlin2018bert} as \acrfull{mlm}. \acrshort{mvlm} is simillar to \acrshort{mlm} but instead of dealing with only text input, it can work with text and layout information.  Masking is a process to inform the sequence-processing layers that some timestamps are missing in input and model is asked to predict over the whole vocabulary. The representation of this masked word or image region is being learned by model from left or right side of the words or regions. This approach are applied usually on the models that are bidirectional and over the training, model gets better to predict the masked word or region. In \acrshort{mvlm} during the pre-training of \acrshort{lilt} the masking is only applied on textual information while non-textual information remains unchanged. 15\% of the text tokens were masked, among them 80\% were replaces with special token $[MASK]$ and 10\% are replaced with random tokens from whole vocabulary and 10\% remained kept unchanged. 
+
+\subsubsection{Key Point Location}
+This task was introduced by \cite{wang-etal-2022-lilt} in order to make model understand layout information. \acrshort{kpl} divides the entire document layout into \(7\times7\) regions which will be randomly masked. The model have to predict the region for each boxes from classes like top-left corner, bottom-right corner and center point. This regions known as key points that helps model to fully understand the text content and know where to put a specific word/sentence based on surrounding word/sentence. During the pre-training in task \acrshort{kpl}, 15\% of boxes were masked, where 80\% of them were replaced by \((0,0,0,0,0,0)\), 10\% were replaced with random boxes sample from the same batch and rest 10\% were remained unchanged.
+
+\subsubsection{Cross-modal Alignment Identification}
+In this task both encoded features of token-box by \acrshort{mvlm} and \acrshort{kpl} are being collected. An additional binary classification head upon them is applied to identify whether the pair is aligned. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+

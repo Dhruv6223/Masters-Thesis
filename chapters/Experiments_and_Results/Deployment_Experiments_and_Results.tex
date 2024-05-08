@@ -1,0 +1,48 @@
+
+
+\section{Experiments and Results for Deployment}
+In previous sections, we discussed different challenges and methods to serve a \acrshort{ml} models as a product. In this section we will discuss about the performance of both workflow mentioned in \Cref{deployment_methods}. Workflow \ref{s3_deployment} was proposed in the early stage of development, since after selecting the final \acrshort{ml} model, the task was to make a working prototype of a \acrshort{ml} model. There are many ways to deploy the model as we discussed in \Cref{deployment_methods} such as using SageMaker to deploy a model on a endpoint. SageMaker\(^{\ref{sagemaker}}\) uses EC2 instance to deploy the model on an endpoint. However, Use of SageMaker can be complex since developers need to configure the scalability and concurrency manually. Where lambda functions provides default concurrency of 1000, which means if the lambda function gets 1000 invocations at the same time, it can copy itself and provide responses to all those request separately. However, lambda function have size limitation of 10 GB, where SageMaker endpoint can be more flexible to the model size for deployment. After the fine-tuning of \acrshort{lilt}, the size of all models remains under 3 GB, which makes it possible to use containerization approach to deploy the model for lambda function. When we compare the workflow(\Cref{s3_deployment} and \Cref{workflow_restapi}), the lambda function shares the same functionality. Here the lambda function is being formed using containerized image which is having \acrshort{ml} model, application's code and all dependencies.  
+
+For the prototype, we used s3 Bucket for triggering the lambda function as shown in \Cref{fig:s3-trigger-workflow}. This workflow is able to scale automatically, since the core component is a lambda function. We used docker\footnote{\url{https://www.docker.com}, Accessed: 29.04.2024}, to containerized \acrshort{ml} application's code and dependencies, the memory size of the lambda function is 6 GB. The \Cref{tab:cost_s3} includes the cost of  workflow (\ref{s3_deployment}) for 1000 requests with the average payload size of 3 MB and the average processing time of 3 seconds to get the prediction from the model.
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{ll}
+        \toprule
+         \textbf{Service Name}& \textbf{Costs}  \\ \midrule
+         Simple Storage Service (S3)& 0.10 \\
+         Elastic Container Registry & 1.00/month\\
+         Lambda & 0.35 \\
+         Textract& 1.50 \\ \midrule 
+         \textbf{Total} & \$ 2.95 \\ \bottomrule
+         
+    \end{tabular}
+    \caption{Cost estimation for workflow \ref{s3_deployment}}
+    \label{tab:cost_s3}
+\end{table}
+
+
+ For developing a SaaS product using the selected model, we have used the approach shown in \Cref{workflow_restapi}. The RestAPIs makes it possible to develop an interface between frontend and backend with additional availability of adding authentication layer in order to manage the users. Using this approach, a \acrshort{ml} model can be deployed using backend and the user interface can be deployed using frontend and both system can communicate with each other using API Gateway that is secured using authentication flow shown in \Cref{fig:Authenticationflow}. The deployment for Lambda function is similar to workflow \ref{fig:s3-trigger-workflow}, therefore this workflow is also can scale automatically with the default concurrency of 1000. 
+ In the \Cref{tab:cost_api}, a cost estimation for 1000 request with average payload size of 3 MB and average  processing time of 3 seconds to generate the prediction from the model is described. Here, Lambda(model) denotes the containerized lambda function that is having our \acrshort{ml} model and dependencies, Lambda(Authorizer) denotes the lambda function assigned to authentication flow shown in \Cref{fig:Authenticationflow}. Moreover, the cost of the user management tool Cognito (\Cref{fig:Authenticationflow}) is not included since it provides 50000 free request for authentication.
+
+ \begin{table}[!ht]
+     \centering
+     \begin{tabular}{ll}
+        \toprule
+        \textbf{Service Name}& \textbf{Costs}  \\ \midrule
+        Elastic Container Registry& 1.00/month\\
+        Textract  & 1.50 \\
+        API Gateway & 0.003 \\
+        Lambda(model) & 0.35\\
+        Lambda(Authorizer) & 0.002\\ \midrule
+        \textbf{Total} & \$ 2.855\\ \bottomrule
+        
+     \end{tabular}
+     \caption{Cost estimation for workflow \ref{workflow_restapi}}
+     \label{tab:cost_api}
+ \end{table}
+
+
+When we compare the \Cref{tab:cost_s3} and \Cref{tab:cost_api}, it is clear that running the lambda function is the only one costing the most in both table. The cost of running lambda functions is highly dependent on the time for processing requests and the memory allocated to the lambda function. For instance, we used "Efficient illumination compensation techniques for text images"\footnote{\url{https://github.com/fanyirobin/text-image-binarization/tree/master }, Accessed: 30.04.2024 \label{image_enhancement}} to perform text-image-binarization which is a main pre-processing steps to detecting text from a document for most available OCR services. In this process, we aim to improve image readability, for instance dealing with some artifacts of document such as noise, faint characters, bad scanning conditions, uneven light exposure and so on. For average image size of 3MB, the complete procedure to automatically remove the noise and shadows, improving light distribution using implementation from GitHub\(^{\ref{image_enhancement}}\), which is taking from 1 to 3 minutes to improve the image. In this case, if we consider the memory size of the lambda function is 7 GB and it is running for 2 minutes, the lambda function is costing \$ 14.
+
+From the cost estimation of both workflows, \ref{workflow_restapi} provides more flexibility to use a \acrshort{ml} model as a web service where user can easily interact, access the service more securely and \ref{workflow_restapi} workflow also provides more control over managing these users with almost same amount of cost making it an ideal approach to deploy the model for SaaS. 

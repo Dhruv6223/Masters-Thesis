@@ -1,0 +1,53 @@
+
+\section{Fine-Tuning of LiLT \label{section_fine_tune}}
+
+Fine-Tune is an approach to transfer learning where we update the weights of pre-trained model according to the new data. Usually models that are pre-trained on large corpora are fine-tuned by reusing the model's parameters as a initial point and a task-specific layer such as relation extraction, named entity recognition, question answers, semantic analysis, token classification and so on is added which can be trained from the scratch or partially. Fine-tuning can be achieved on entire neural network or a subset of that, where remaining layers from this subset is known as "frozen layers" (layers is not updated in backpropagation process). Fine-tuning is generally achieved in supervised learning manner, however there are few techniques to fine-tune a model using weak supervision \cite{yu2020fine}.
+
+\subsection{Comparison of LiLT on Semantic Entity Recognition}
+ As we discussed in \Cref{datasets} that \acrshort{lilt} can be pre-trained with monolingual and multi-lingual text based models, which can be fine-tune further on specific tasks and language. \acrshort{lilt} has been used with different text based models in order to process the text in a document for text flow and different datasets and languages in those datasets leads to vary the performance of LiLT when its being combined with various text based models for the same task(\acrshort{ser}). For instance, when LiLT is combined with RoBERTa\(_{BASE}\) (LiLT[EN-R]\(_{BASE}\)), which is a text based model pre-trained on English language dataset. During the fine-tunnig for \acrfull{ser} it shows different F1 scores, the comparison of LiLT[EN-R]\(_{BASE}\) over different datasets is shown in \Cref{tab:compare_dataset_f1_english}. We can see the model LiLT[EN-R]\(_{BASE}\) which is pre-trained on English dataset and fine-tuned in Indonesian language have higher F1 than the one fine-tuned in English. In \Cref{tab:compare_datasets_f1_multilingual}, the fine-tuning results of LiLT[InfoXLM]\(_{BASE}\) for \acrshort{ser} task using different datasets and language is shown,  which uses InfoXLM\(_{BASE}\) a pre-trained text-based model pre-trained on multi-lingual corpus for text flow.  The use of multi-lingual text-based model (LiLT[InfoXLM]\(_{BASE}\)) in combination with LiLT shows slighly less performance with compare to combination of LiLT with monolingual text-based models (LiLT[EN-R]\(_{BASE}\)) on \acrshort{ser} when its being fine-tuned in one specific language. 
+
+ \begin{table}[!ht]
+     \centering
+     \begin{tabular}{lcl}
+     \toprule
+     \textbf{Dataset} &\textbf{Language for fine-tuning} &\textbf{F1} \\ \midrule
+          FUNSD& English& 0.884 \\
+          CORD& Indonesian &0.960 \\ \bottomrule
+     \end{tabular}
+     \caption{Fine-tuning results of LiLT[EN-R]\(_{BASE}\) on different language for \acrshort{ser} task}
+     \label{tab:compare_dataset_f1_english}
+ \end{table}
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{lcl}
+    \toprule
+    \textbf{Dataset}&\textbf{Language for fine-tuning}& \textbf{F1}\\ \midrule
+         FUNSD& English&0.85  \\
+         CORD& Indonesian & 0.957\\
+         XFUND& Deutsch & 0.823 \\ \bottomrule
+    \end{tabular}
+    \caption{Fine-tuning results of LiLT[InfoXLM]\(_{BASE}\) on different language \acrshort{ser} task}
+    \label{tab:compare_datasets_f1_multilingual}
+\end{table}
+
+
+\subsection{Comparison of LiLT on Token Classification}
+Document content classification or text classification, also known as token classification is a slightly different task than \acrshort{ser}. Instead of classifying document content into specific classes like person's name, location, dates, quantieties and so on, token classification refers to classifying content into broad and general sections such as question, header, answer and so on. In previous sections, we explored LiLT in combinations with different types of text based models and different datasets with different language for \acrshort{ser} task. However,  to the best of our knowledge, there is only one text-based model in combination with LiLT available that is fine-tuned for \acrshort{ser} task for German language documents. The LiLT[InfoXLM]\(_{BASE}\) fine-tuned by \cite{wang-etal-2022-lilt} over XFUND dataset over different languages for \acrshort{ser} that includes total 7 languages including German(\Cref{tab:Comparision_Xfund}). In addition, most experiments on \acrshort{lilt} has been done over \acrshort{ser} tasks and there are very few experiments available that shows the performance of \acrshort{lilt} over document content or text classification. For instance, the GitHub repository \footnote{\url{https://github.com/NielsRogge/Transformers-Tutorials/tree/master/LiLT}, Accessed: 15.04.2024 \label{fine-tune-token-classification}} contains information on combining the \acrshort{lilt} with different text-based models, fine-tune the combined models or available base models provided by \cite{wang-etal-2022-lilt} over FUNSD or custom datasets. In \Cref{tab:Compare_FUNSD_token_classification}, the comparison between different combinations of \acrshort{lilt} with text-based models, datasets, epoch and F1 on token classification task is described from GitHub repository\(^{\ref{fine-tune-token-classification}}\). An epoch refers to one cycle of training the model over complete train-dataset. 
+
+\begin{table}[!ht]
+    \centering
+    \captionsetup{justification=centering}
+    \begin{tabular}{lcccl}
+    \toprule
+    \textbf{Model}& \textbf{Dataset}& \textbf{Language} & \textbf{Epoch} &\textbf{F1}\\ \midrule
+     \(\text{LiLT[XLM-RoBERTa]}_{BASE}\)& FUNSD & English & 20 & 0.735 \\
+     \(\text{LiLT[EN-R]}_{BASE}\) & FUNSD & English & 50 & 0.771 \\
+     \(\text{LiLT[EN-R]}_{BASE}\)& FUNSD & English & 106 & 0.806 \\ \bottomrule
+    \end{tabular}
+    \caption{Comparison of fine-tuning results of LiLT with different text-based models  on FUNSD for token classification task available on GitHub repository\(^{\ref{fine-tune-token-classification}}\) }
+    \label{tab:Compare_FUNSD_token_classification}
+\end{table}
+
+
+By looking at the fine-tune results of \acrshort{lilt} in combination with mono-lingual and multi-lingual text based models for \acrshort{ser} and token classification tasks on an English language dataset FUNSD, it is clear that the combination of \acrshort{lilt} with mono-lingual text based model (\(\text{LiLT[EN-R]}_{BASE}\)) shows highet F1 in both token classification and \acrshort{ser} tasks. Therefore, in our work we will try to find out the performance of \acrshort{lilt} in combination with monolingual and multi-lingual text-based pre-trained models on token classification task for German language. This will help to choose the best model that is performing good for German language documents and still can be used for multi-lingual documents on token classification task.    

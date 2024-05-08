@@ -1,0 +1,21 @@
+\section{Compilers}
+The roots of compilers are in 19s, Corrado Böhm wrote first ever practical compiler \cite{Theroy_compiler}. Grace Murray Hopper wrote the first implemented compiler. She also was a part of the team who developed the "UNIVAC \RomanNumeralCaps{1}", the first commercial computer produced  in United States \cite{Grace_Murray_Hopper_History}. Later on she created the first English-Based data processing language FLOW-MATIC, a principal precursor for COBOL - a prime programming language for business applications. Since then, many more compilers introduced with various programming languages. In simple words, Compilers are translator for computers. Through compilers, machines can understand the High-level programming languages like C++, Java, Python and so on. High-level programming languages refer as a language that human can read and write, However it is not possible to execute these lines of High-level programming languages directly by computer's CPU. Therefore the concept of compilers has been introduced in order to translate these high-level programming languages("Source Code") to machine codes, also known as "binary code (1's and 0's)". Compilers takes the Source Code as it is in High-level programming language and breaks it into small chunks (Lexemes). These Lexemes are later on converted to "tokens" for processing. Once the token generation is been done, Using Syntax Analysis and Semantic Analysis, Compilers can check whether if the sequence of tokens meets the requirements of rules and complex issues like function arguments and type compatibility in syntax tree accordingly. Once it is ready, the translation task is being performed in which compilers will generate intermediate code, optimize the code(optional), and generate the machine code.  
+
+
+\subsubsection{Overview of compiler's functionality}
+\begin{listing}[!hb]
+
+        \begin{minted}{C++}
+            int main(){
+                int a = 5;
+                int b = 10;
+                return a + b;
+            }
+        \end{minted}
+    
+    \caption{Example of Compiler's steps}
+    \label{Listing:1}   
+\end{listing}
+
+
+The source code in \Cref{Listing:1} is written in High-level programming language "C++". Compiler will take this code and perform a lexical analysis and generates tokens, that will be represented as int, main, (, ), \{, int a = 5;, int b = 10;, return a + b; and \}. After generating tokens it performs syntax analysis in which it checks whether if these tokens makes sense in order they are in, e.g., we have defined the function \textbf{main} with no arguments and returns \textbf{int}. We have defined two integers \textbf{a} and \textbf{b}, than the function will return the sum of these integers. In the step Symantic Analysis, Compilers checks whether if we are using variables before they're defined? Are we trying to add things like strings that are not integers or numbers? and so on. Finally, the compilers will generate the machine code (1s and 0s) that is specific to the architecture to the machine where it's meant to run on.

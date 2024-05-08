@@ -1,0 +1,140 @@
+
+\documentclass{report}
+\usepackage[a4paper,top=25mm,bottom=25mm,inner=5cm,outer=2cm]{geometry}
+% \documentclass{book}
+% \usepackage[
+%     a4paper,
+%     inner=5cm,
+%     outer=2cm,
+%     top=25mm,bottom=25mm
+% ]{geometry}
+
+
+\usepackage{graphicx}          % -| Required for inserting images
+\usepackage{subcaption}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+\usepackage{latexsym,fancyhdr,url}
+\usepackage{booktabs}
+\usepackage{multirow} 
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{cleveref}
+\usepackage{url}
+\usepackage[super]{nth}
+\usepackage{textcomp}
+\usepackage{caption}
+
+\usepackage[acronym]{glossaries}
+
+\usepackage{minted} % for code snippet
+
+
+
+
+
+\makeglossaries
+
+\newacronym{aws}{AWS}{Amazon Web Services}
+\newacronym{nlp}{NLP}{Natural Language Processing}
+\newacronym{vdu}{VDU}{Visual Document Understanding}
+\newacronym{ocr}{OCR}{Optical Character Recognition}
+\newacronym{ai}{AI}{Artificial Intelligent}
+\newacronym{mt}{MT}{Machine Translation}
+\newacronym{ml}{ML}{Machine Learning}
+\newacronym{vqa}{VQA}{Visual Question Answering}
+\newacronym{sota}{SOTA}{State Of The Art}
+\newacronym{vrdu}{VrDU}{Visually-rich Document Understanding}
+\newacronym{idc}{IDC}{International Data Corporation}
+\newacronym{api}{API}{Application programming interface}
+\newacronym{mvlm}{MVLM}{Masked Visual-Language Modeling}
+\newacronym{mlm}{MLM}{Masked LM}
+\newacronym{kpl}{KPL}{Key Point Location}
+\newacronym{lilt}{LiLT}{Language-Independent Layout Transformer}
+\newacronym{ser}{SER}{Semantic Entity Recognition}
+\newacronym{cdip}{CDIP}{Complex Document Information Processing}
+\newacronym{iot}{IoT}{Internet of Things}
+\newacronym{ec2}{Amazon EC2}{Amazon Elastic Compute Cloud}
+\newacronym{IaaS}{IaaS}{Infrastructure as a Service}
+\newacronym{s3}{S3}{Simple Storage Service}
+\newacronym{ecr}{ECR}{Elastic Container Registry}
+\newacronym{https}{HTTPS}{Hypertext Transfer Protocol Secure}
+\newacronym{http}{HTTP}{Hypertext Transfer Protocol}
+\newacronym{www}{WWW}{World Wide Web}
+\newacronym{html}{HTML}{Hyper Text Markup Language}
+\newacronym{css}{CSS}{Cascading Style Sheets}
+\newacronym{gui}{GUI}{Graphical User Interface}
+\newacronym{jwt}{JWT}{JSON Web Token}
+\newacronym{oauth}{OAuth}{Open Authorization}
+\newacronym{ram}{RAM}{Random-access memory}
+\newacronym{saas}{SaaS}{software as a service}
+
+
+% Romman numbers
+\newcommand{\RomanNumeralCaps}[1]  % Capital Letters
+    {\MakeUppercase{\romannumeral #1}}
+\newcommand{\RomanNumeralLows}[1]  % Small Letters
+    {\MakeLowercase{\romannumeral #1}}
+
+
+%citation Style 
+\usepackage{natbib}
+% \title{A Language Independent Natural Language Processing Model For An Intelligent Document Processing\\
+% {\small Developing a ML driven NLP pipeline in AWS for Salable Solutions}}
+
+
+
+% \author{Dhruvkumar Shihora}
+
+
+
+
+
+
+% \date{}
+
+\begin{document}
+
+%\begin{titlepage}
+%    \begin{center}
+%        \vspace*{1cm}
+%        \huge{\maketitle}
+%        
+%    \end{center}
+%\end{titlepage}
+\input{chapters/titlepage}
+
+\includepdf[width=1.2 \textwidth, pages=-]{chapters/Documents/Proposal_MA.pdf}
+
+
+\include{chapters/abstract}
+% \include{chapters/dedication}
+% \include{chapters/Acknowledgements}
+
+\tableofcontents
+\listoffigures
+
+\listoftables
+\printglossary[type=\acronymtype, style=long, nonumberlist]
+
+\include{chapters/introduction}
+\include{chapters/Problem_Description_and_Related_Works/Problem_Description_and_Related_Work}
+\include{chapters/Proposed_Model/Propsed_Model}
+\include{chapters/DATASETs/Datasets}
+\include{chapters/Fine_Tuning_and_Results/Fine_Tnning_and_Results}
+\include{chapters/Deployment/deployment}
+% \include{chapters/Background/Background}
+% \include{chapters/Literature_review/literature_review}
+% \include{chapters/Methods/Methods}
+% \include{chapters/Experiments_and_Results/Experiments_and_Results}
+
+\include{chapters/conclusions}
+
+\bibliographystyle{alpha}
+\bibliography{reference}
+
+% \appendix
+% \input{chapters/Appendix}
+\appendix
+\input{chapters/Appendix}
+\end{document}
